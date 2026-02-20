@@ -105,14 +105,13 @@ df_logrm <- data.frame(TagsValue=character(), Definition=character(), Value=char
 rows_to_remove <- c()
 
 
+
 for (i in 1:nrow(df_raw))
 {
      if (df_raw[i, 2] == "Bad value" && df_raw[i, 3] == "Garbage")
      {
          rows_to_remove <- c(rows_to_remove, i)
-         # Log the removed bad values
          df_logrm <- rbind(df_logrm, c(df_raw[i, 1], df_raw[i, 2],df_raw[i, 3]))
-         # Save the index for the rows to be removed
      }
 }
 
