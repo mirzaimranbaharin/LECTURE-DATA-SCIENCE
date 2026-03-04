@@ -1,172 +1,81 @@
-install.packages("readr")
-
-# Load required libraries
-library(dplyr)
 library(readr)
+student_data <- read_csv("C:/Users/imran/Downloads/student_data.csv")
+install.packages("dplyr")
+library(dplyr)
 
-student_data <- read.csv("C:/Users/imran/Downloads/student_data.csv")
-
-# Preview the data
+#Introduction
+View(student_data)
+summary(student_data)
 head(student_data)
 tail(student_data)
 
-# Check structure
-str(student_data)
+#Filter
+#student_fail
+student_fail <- student_data %>% filter(final_exam_mark <40)
+View(student_fail)
 
-#FILTER
-# Filter students who failed the final exam (mark < 40)
-student_fail <- student_data %>% filter(final_exam_mark < 40)
-print(student_fail)
+#Arrange student data
+mydata <- student_data%>% filter(final_exam_mark>40)%>% arrange(final_exam_mark)
+View(mydata)
+arrange(desc(final_exam_mark))
 
-# Filter students who passed the final exam (mark >= 40)
-student_pass <- student_data %>% filter(final_exam_mark >= 40)
-print(student_pass)
+mydata1<- student_data %>% filter(final_exam_mark > 40) %>%
+arrange(desc(final_exam_mark))
+View(mydata1)
 
-#ARRANGE
-# Arrange passing students by final_exam_mark (ascending)
-mydata_asc <- student_data %>%
-  filter(final_exam_mark > 40) %>%
-  arrange(final_exam_mark)
-print(mydata_asc)
+#Select
+mydata <- student_data%>% select(student_id,coursework_mark, final_exam_mark)
+View(mydata)
+glimpse(mydata)
 
-# Arrange passing students by final_exam_mark (descending)
-mydata_desc <- student_data %>%
-  filter(final_exam_mark > 40) %>%
-  arrange(desc(final_exam_mark))
-print(mydata_desc)
+#Mutate
+mydata4 = student_data%>% mutate(Total_Mark=(coursework_mark + final_exam_mark/200*100))
+View(mydata4)
 
-#SELECT
-# Select only specific columns
-mydata_select <- student_data %>%
-  select(student_id, coursework_mark, final_exam_mark)
-print(mydata_select)
+#Descriptive Analytics
+data("iris")
+str(iris)
+summary(iris)
 
-# Peek at structure of selected columns
-glimpse(mydata_select)
+A<-c(170.2, 181.5, 188.9, 163.9, 166.4, 163.7, 160.4, 175.8, 181.5)
+quantile(A)
+sort(A)
+quantile(A,0.25)
+quantile(A,0.75)
+IQR(A)
 
-#MUTATE
-# Formula: coursework (50%) + final exam (50%)
-mydata_mutate <- student_data %>%
-  mutate(Total_Mark = (coursework_mark * 0.5) + (final_exam_mark * 0.5))
-print(mydata_mutate)
 
-# Add grade classification based on Total_Mark
-mydata_mutate <- mydata_mutate %>%
-  mutate(Grade = case_when(
-    Total_Mark >= 80 ~ "A",
-    Total_Mark >= 70 ~ "B",
-    Total_Mark >= 60 ~ "C",
-    Total_Mark >= 50 ~ "D",
-    TRUE             ~ "F"
-  ))
-print(mydata_mutate)
 
-#DESCRIPTIVE STATISTICS
-# Central Tendency
-cat("\n--- Coursework Mark ---\n")
-cat("Mean:   ", mean(student_data$coursework_mark), "\n")
-cat("Median: ", median(student_data$coursework_mark), "\n")
+#Histogram
+hist(iris$Sepal.Length, main = "Histogram of Sepal Length", xlab = "Sepal Length (cm)", ylab = "Frequency", col = "lightblue", border = "black")
 
-cat("\n--- Final Exam Mark ---\n")
-cat("Mean:   ", mean(student_data$final_exam_mark), "\n")
-cat("Median: ", median(student_data$final_exam_mark), "\n")
+#Box Plot
+boxplot(Sepal.Length ~ Species, data = iris, main = "Sepal Length by Species", xlab = "Species", ylab = "Sepal Length(cm)", col = c("lightgreen", "lightpink", "lightyellow"))
 
-# Variability/Dispersion
-cat("\n--- Spread: Coursework Mark ---\n")
-cat("Min:    ", min(student_data$coursework_mark), "\n")
-cat("Max:    ", max(student_data$coursework_mark), "\n")
-cat("Range:  ", range(student_data$coursework_mark), "\n")
-cat("SD:     ", sd(student_data$coursework_mark), "\n")
-cat("Var:    ", var(student_data$coursework_mark), "\n")
+#Scatter Plot
+plot(iris$Sepal.Length, iris$Petal.Length, main = "Sepal Length vs Petal Length", xlab = "Sepal Length(cm)", ylab = "Petal Length(cm)", col = as.numeric(iris$Species), pch = 19)
 
-cat("\n--- Spread: Final Exam Mark ---\n")
-cat("Min:    ", min(student_data$final_exam_mark), "\n")
-cat("Max:    ", max(student_data$final_exam_mark), "\n")
-cat("Range:  ", range(student_data$final_exam_mark), "\n")
-cat("SD:     ", sd(student_data$final_exam_mark), "\n")
-cat("Var:    ", var(student_data$final_exam_mark), "\n")
-
-# Quantiles
-cat("\n--- Quantiles: Final Exam Mark ---\n")
-quantile(student_data$final_exam_mark)
-cat("Q1 (25%): ", quantile(student_data$final_exam_mark, 0.25), "\n")
-cat("Q3 (75%): ", quantile(student_data$final_exam_mark, 0.75), "\n")
-cat("IQR:      ", IQR(student_data$final_exam_mark), "\n")
-
-# Full Summary
-cat("\n--- Full Summary ---\n")
-summary(student_data)
-
-# Count checks
-cat("\nTotal rows:    ", nrow(student_data), "\n")
-cat("Total columns: ", ncol(student_data), "\n")
-cat("Missing values in coursework_mark: ", sum(is.na(student_data$coursework_mark)), "\n")
-cat("Missing values in final_exam_mark: ", sum(is.na(student_data$final_exam_mark)), "\n")
-
-# VISUALIZATIONS (Descriptive Analytics)
-# Histogram of Final Exam Mark
-hist(student_data$final_exam_mark,
-     main  = "Histogram of Final Exam Mark",
-     xlab  = "Final Exam Mark",
-     col   = "lightblue",
-     border = "white")
-
-# Boxplot of Final Exam Mark grouped by Gender
-boxplot(final_exam_mark ~ gender,
-        data  = student_data,
-        main  = "Final Exam Mark by Gender",
-        xlab  = "Gender",
-        ylab  = "Final Exam Mark",
-        col   = c("lightpink", "lightblue"))
-
-# Scatter plot: Coursework Mark vs Final Exam Mark
-plot(student_data$coursework_mark,
-     student_data$final_exam_mark,
-     main = "Coursework Mark vs Final Exam M ark",
-     xlab = "Coursework Mark",
-     ylab = "Final Exam Mark",
-     col  = "steelblue",
-     pch  = 16)
-abline(lm(final_exam_mark ~ coursework_mark, data = student_data),
-       col = "red", lty = 2)
-
-# OUTLIER DETECTION & HANDLING (IQR Method)
-# Detect outliers in final_exam_mark
-q1  <- quantile(student_data$final_exam_mark, 0.25)
-q3  <- quantile(student_data$final_exam_mark, 0.75)
-iqr <- IQR(student_data$final_exam_mark)
-le  <- q1 - 1.5 * iqr  # lower extreme
-ue  <- q3 + 1.5 * iqr  # upper extreme
-
-cat("\nOutlier bounds for final_exam_mark:\n")
-cat("Lower Extreme: ", le, "\n")
-cat("Upper Extreme: ", ue, "\n")
-
-# Show outliers
-outliers <- student_data %>%
-  filter(final_exam_mark < le | final_exam_mark > ue)
-cat("Outliers found:\n")
-print(outliers)
-
-# Visualise before treatment
-boxplot(student_data$final_exam_mark,
-        main = "Final Exam Mark - Before Outlier Treatment",
-        col  = "lightyellow")
-
-# Option A: Replace outliers with mean
-student_treated_mean <- student_data
-avg <- round(mean(student_treated_mean$final_exam_mark))
-student_treated_mean$final_exam_mark[student_treated_mean$final_exam_mark < le] <- avg
-student_treated_mean$final_exam_mark[student_treated_mean$final_exam_mark > ue] <- avg
-
-# Option B: Replace outliers with boundary values (capping)
-student_treated_cap <- student_data
-student_treated_cap$final_exam_mark[student_treated_cap$final_exam_mark < le] <- le
-student_treated_cap$final_exam_mark[student_treated_cap$final_exam_mark > ue] <- ue
-
-# Visualise after capping
-boxplot(student_treated_cap$final_exam_mark,
-        main = "Final Exam Mark - After Outlier Capping",
-        col  = "lightgreen")
-
+#Outliers
+library(readr)
+dfplayers<-read.csv("players.csv")
+is.na(players)
+median_age <- median(dfplayers$Age, na.rm =TRUE)
+data<-c(30,24,26,28,29,28,27,26,32,34,13,15,14,31,29,28,24,25,30,34,35,27,30,34,44,48)
+boxplot(data, main = "Boxplot")
+first_q<-quantile(data,0.25)
+ue<-third_q + 1.5 * iqr
+data_new<-data
+data_new <- data_new[!data_new<le]
+data_new <- data_new[!data_new>ue]
+data_new
+data_new <- data
+avg <- round(mean(data_new))  
+data_new[data_new<le] <- avg
+data_new[data_new>ue] <- avg
+data_new
+data_new <- data
+data_new[data_new<le] <- le
+data_new[data_new>ue] <- ue
+data_new
+boxplot(data_new, main = "Boxplot")
 cat("\nyippie\n")
