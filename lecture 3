@@ -1,0 +1,287 @@
+#simple linear regression
+# data of height
+x <- c(151, 174, 138, 186, 128, 136, 179, 163, 152, 131)
+
+# data of weight
+y <- c(63, 81, 56, 91, 47, 57, 76, 72, 62, 48)
+
+# Apply the linear model
+relation <- lm(y ~ x)
+
+print(relation)
+
+
+
+#predict weight from height
+# Find weight of a person with height 170
+X_test <- data.frame(x = 170)
+
+result <- predict(relation, X_test)
+
+print(round(result, digits = 2))
+
+
+
+#plot regression graphics
+# Plot the chart
+plot(x, y,
+     col = "blue",
+     main = "Height & Weight Regression",
+     pch = 16,
+     xlab = "Height in cm",
+     ylab = "Weight in Kg")
+
+abline(lm(y ~ x))
+
+
+
+#Create Dataset and Split Training / Testing
+x <- c(151, 174, 138, 186, 128, 136, 179, 163, 152, 131)
+y <- c(63, 81, 56, 91, 47, 57, 76, 72, 62, 48)
+
+# create dataframe
+data1 <- data.frame(x, y)
+
+# training data
+data1_train <- data1[1:7, ]
+
+# testing data
+data1_test <- data1[8:10, ]
+
+# apply model
+relation <- lm(y ~ x, data = data1_train)
+
+print(relation)
+
+
+
+#predict testing data
+# make prediction
+x_test <- data.frame(x = data1_test$x)
+
+result <- predict(relation, x_test)
+
+print(result)
+
+
+
+#performance measurement option 1
+mape <- mean(abs((data1_test$y - result) / data1_test$y) * 100)
+
+paste("The error - MAPE is:", round(mape, digits = 2), "%")
+
+
+
+#performance measurement option 2
+actuals_preds <- data.frame(cbind(actuals = data1_test$y, predicteds = result)
+)
+
+mape <- mean(abs(actuals_preds$actuals - actuals_preds$predicteds) /
+               actuals_preds$actuals) * 100
+
+paste("The error - MAPE is:", round(mape, digits = 2), "%")
+
+
+
+#case study
+df <- read.csv("C:/Users/imran/Downloads/income_happiness.csv)
+
+# split data
+train_indices <- sample(1:nrow(df), size = 0.8 * nrow(df))
+train_data <- df[train_indices, ]
+test_data <- df[-train_indices, ]
+
+# build model
+relation <- lm(happiness ~ income, data = train_data)
+
+print(relation)
+
+
+
+a <- data.frame(x = test_data$income)
+colnames(a) <- "income"
+result <- predict(relation, a)
+
+
+
+#plot graph
+plot(test_data$income,
+     test_data$happiness,
+     col = "red",
+     pch = 16,
+     xlab = "income",
+     ylab = "happiness")
+
+abline(lm(happiness ~ income, data = train_data))
+
+
+
+# load dataset
+data(mtcars)
+head(mtcars)
+str(mtcars)
+
+
+
+#Build Multiple Linear Regression Model
+model <- lm(mpg ~ hp + wt + cyl, data = mtcars)
+summary(model)
+
+
+
+#Train / Test Split for Multiple Regression
+data.train <- mtcars[1:22, ]
+data.test <- mtcars[23:32, ]
+
+# model
+relation <- lm(mpg ~ hp + wt + cyl, data = data.train)
+
+summary(relation)
+
+
+
+#prediction
+a <- data.frame(
+  hp = data.test$hp,
+  wt = data.test$wt,
+  cyl = data.test$cyl
+)
+
+result <- predict(relation, a)
+
+print(round(result, digits = 2))
+
+
+
+#MAPE Error for Multiple Regression
+mape <- mean(abs((data.test$mpg - result) / data.test$mpg) * 100)
+paste("The error - MAPE is:", round(mape, digits = 2), "%")
+
+
+
+#class activity
+#Create a simple linear regression model tocpredict the employees’ monthly salary based on their years of experience. Use 70% of the data for training and 30% for testing the model.
+
+# Dataset
+experience <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+salary <- c(2500, 2700, 3000, 3400, 3900, 4400, 5000, 5600, 6200, 6900)
+
+df <- data.frame(Experience_Years = experience, Monthly_Salary = salary)
+
+# Split 70% train, 30% test
+n_train <- round(0.7 * nrow(df))
+train_data <- df[1:n_train, ]
+test_data  <- df[(n_train + 1):nrow(df), ]
+
+cat("Training samples:", nrow(train_data), "\n")
+cat("Testing samples: ", nrow(test_data), "\n")
+
+# Fit model
+relation <- lm(Monthly_Salary ~ Experience_Years, data = train_data)
+print(relation)
+
+# Predict
+result <- predict(relation, test_data)
+
+# Actual vs Predicted
+actuals_preds <- data.frame(
+  Experience = test_data$Experience_Years,
+  Actuals    = test_data$Monthly_Salary,
+  Predicted  = round(result, 2)
+)
+print(actuals_preds)
+
+# MAPE
+mape <- mean(abs((actuals_preds$Actuals - actuals_preds$Predicted) / actuals_preds$Actuals) * 100)
+paste("The error - MAPE is:", round(mape, digit = 2), "%")
+
+# Plot
+plot(train_data$Experience_Years, train_data$Monthly_Salary,
+     col = "blue", pch = 16, xlim = c(0, 11), ylim = c(2000, 7500),
+     xlab = "Years of Experience", ylab = "Monthly Salary (RM)",
+     main = "Simple Linear Regression: Salary vs Experience")
+points(test_data$Experience_Years, test_data$Monthly_Salary,
+       col = "red", pch = 17, cex = 1.2)
+points(test_data$Experience_Years, result,
+       col = "green", pch = 15, cex = 1.2)
+abline(relation, col = "navy", lwd = 2)
+legend("topleft",
+       legend = c("Train (actual)", "Test (actual)", "Test (predicted)", "Regression line"),
+       col    = c("blue", "red", "green", "navy"),
+       pch    = c(16, 17, 15, NA), lty = c(NA, NA, NA, 1), lwd = 2)
+       
+       
+#Visualize the output of the proposed model in part (a) using a scatter plot with a regression line
+# ============================================================
+# CLASS ACTIVITY 2: Multiple Linear Regression
+# Predicting Ozone from Solar.R, Wind, and Temp
+# ============================================================
+
+# Dataset (from slide 28)
+df2 <- data.frame(
+  Ozone   = c(11,11,11,12,12,13,13,13,13,14,18,20,23,24,28,31,36,41,44,45,
+              48,50,52,55,56,57,63,63,65,65,66,71,77,79,82,89,108,110,115,135),
+  Solar_R = c(290,44,320,149,120,137,112,27,238,274,65,334,13,299,19,285,224,190,9,345,
+              193,220,230,259,238,236,190,220,279,286,287,236,203,258,213,236,223,190,259,269),
+  Wind    = c(9.2,9.7,16.6,12.6,11.5,10.3,11.5,10.3,12.6,10.9,13.2,11.5,12.0,8.6,20.1,14.9,9.7,7.4,10.9,14.3,
+              9.2,8.6,9.7,10.9,9.2,9.7,7.4,8.0,9.7,9.7,9.7,7.4,8.0,6.9,9.2,7.4,11.5,7.4,10.9,4.1),
+  Temp    = c(66,62,73,74,73,76,71,76,64,68,58,56,71,63,70,79,77,67,57,79,
+              79,82,74,69,66,72,82,79,79,81,82,90,84,82,87,90,85,90,88,96)
+)
+
+# Split 70% train, 30% test (random)
+set.seed(42)
+train_indices <- sample(1:nrow(df2), size = 0.7 * nrow(df2))
+train_data2 <- df2[train_indices, ]
+test_data2  <- df2[-train_indices, ]
+
+cat("Training samples:", nrow(train_data2), "\n")
+cat("Testing samples: ", nrow(test_data2), "\n")
+
+# Fit model
+relation2 <- lm(Ozone ~ Solar_R + Wind + Temp, data = train_data2)
+summary(relation2)
+
+# Predict
+result2 <- predict(relation2, test_data2)
+
+# Actual vs Predicted
+actuals_preds2 <- data.frame(
+  Actuals   = test_data2$Ozone,
+  Predicted = round(result2, 2)
+)
+print(actuals_preds2)
+
+# Correlation
+correlation_accuracy <- cor(actuals_preds2)
+print(correlation_accuracy)
+
+# MAPE
+mape2 <- mean(abs((actuals_preds2$Actuals - actuals_preds2$Predicted) / actuals_preds2$Actuals) * 100)
+paste("The error - MAPE is:", round(mape2, digit = 2), "%")
+
+# Plot (3 subplots)
+par(mfrow = c(1, 3))
+
+plot(test_data2$Solar_R, test_data2$Ozone,
+     col = "steelblue", pch = 16, xlab = "Solar.R", ylab = "Ozone",
+     main = "Ozone vs Solar.R")
+points(test_data2$Solar_R, result2, col = "black", pch = 17)
+legend("topleft", legend = c("Actual", "Predicted"),
+       col = c("steelblue", "black"), pch = c(16, 17))
+
+plot(test_data2$Wind, test_data2$Ozone,
+     col = "tomato", pch = 16, xlab = "Wind", ylab = "Ozone",
+     main = "Ozone vs Wind")
+points(test_data2$Wind, result2, col = "black", pch = 17)
+legend("topright", legend = c("Actual", "Predicted"),
+       col = c("tomato", "black"), pch = c(16, 17))
+
+plot(test_data2$Temp, test_data2$Ozone,
+     col = "seagreen", pch = 16, xlab = "Temp", ylab = "Ozone",
+     main = "Ozone vs Temp")
+points(test_data2$Temp, result2, col = "black", pch = 17)
+legend("topleft", legend = c("Actual", "Predicted"),
+       col = c("seagreen", "black"), pch = c(16, 17))
+
+par(mfrow = c(1, 1)) # reset layout
